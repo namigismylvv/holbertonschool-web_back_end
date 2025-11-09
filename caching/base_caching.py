@@ -8,7 +8,7 @@ class BaseCaching():
     """
     MAX_ITEMS = 4
 
-def __init__(self)
+def __init__(self):
     """ Initiliaze
     """
     self.cache_data = {}
