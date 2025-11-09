@@ -8,7 +8,7 @@ class BaseCaching():
     """
     MAX_ITEMS = 4
 
-def __init__(self):
+def __init__(self)
     """ Initiliaze
     """
     self.cache_data = {}
@@ -29,4 +29,3 @@ def get(self, key):
     """ Get an item by key
     """
     raise NotImplementedError("get must be implemented in your cache class")   
-    
