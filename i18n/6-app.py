@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-""" Basic Flask app """
-
-from typing import Dict
-from flask import Flask, render_template, request, g
+"""
+models parameters
+"""
+import flask
+from flask import Flask, render_template, g, request
 from flask_babel import Babel
+
 
 app = Flask(__name__)
 babel = Babel(app)
 
+# fictitious users
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
     2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
@@ -15,9 +18,11 @@ users = {
     4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
 }
 
-
-class Config:
-    """ Config """
+# babel Configuration settings
+class Config(object):
+    """
+    app configuration
+    """
     LANGUAGES = ['en', 'fr']
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
@@ -26,47 +31,52 @@ class Config:
 app.config.from_object(Config)
 
 
-@babel.localeselector
-def get_locale():
-    """ Locale selector """
-    requested_locale = request.args.get('locale')
-    if requested_locale in app.config['LANGUAGES']:
-        return requested_locale
-    try:
-        if g.user['locale'] in app.config['LANGUAGES']:
-            return g.user['locale']
-    except Exception:
-        pass
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
+@app.route("/", methods=['GET'])
+def index():
+    """template """
+    return render_template('5-index.html')
 
 
-def get_user() -> Dict:
-    """ Get user """
+def get_user() -> dict:
+    """Retrieve user based on login_as parameter"""
+    # get the login_as parameter from the request
+    user_id = request.args.get('login_as')
     try:
-        user_id = request.args.get('login_as')
-        if user_id is not None:
-            user_id = int(user_id)
-            return users.get(user_id)
+        # convert the login_as parameter to an int
+        user_id = int(user_id)
+        # if the user_id exists in the users dictionary
+        if user_id in users:
+            return users[user_id]
+        # if the user_id does not exist in the users dictionary
     except (ValueError, TypeError):
-        return None
+        pass
+    # if any of the above conditions are not met, return None
+    return None
 
 
 @app.before_request
 def before_request():
-    """ Before request """
-    g.user = get_user()
+    """ Définir l'utilisateur global s'il est connecté"""
+    user = get_user()
+    if user:
+        g.user = user
 
 
-@app.route('/')
-def root():
-    """ Basic Flask app """
+@babel.localeselector
+def get_locale():
+    """ if a user is logged in, use the locale from the user settings"""
+    if request.args.get('locale'):
+        if request.args.get('locale') in Config.LANGUAGES:
+            return request.args.get('locale')
 
-    try:
-        guser = g.user['name']
-    except Exception:
-        guser = None
-    return render_template('5-index.html', username=guser)
+    if hasattr(g, "user") and (
+        g.user['locale'] and
+        g.user['locale'] in Config.LANGUAGES
+    ):
+        return g.user['locale']
+
+    return request.accept_languages.best_match(['en', 'fr'])
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port="5000")
