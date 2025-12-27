@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-""" Module to start a Flask web application """
+"""Basic Flask app"""
+
 from flask import Flask, render_template
 from flask_babel import Babel
 
@@ -8,20 +9,20 @@ babel = Babel(app)
 
 
 class Config(object):
-    """ Configuration for languages """
-    LANGUAGES = ["en", "fr"]
-    BABEL_DEFAULT_LOCALE = "en"
-    BABEL_DEFAULT_TIMEZONE = "UTC"
+    """ Setup - Babel configuration """
+    LANGUAGES = ['en', 'fr']
+    BABEL_DEFAULT_LOCALE = 'en'
+    BABEL_DEFAULT_TIMEZONE = 'UTC'
 
 
-app.config.from_object(Config)
+app.config.from_object('1-app.Config')
 
 
-@app.route('/')
+@app.route('/', strict_slashes=False)
 def index():
-    """ route to display a message"""
-    return render_template("1-index.html")
+    """Route for the index page"""
+    return render_template('1-index.html')
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port="5000", debug=True)
