@@ -1,0 +1,17 @@
+{
+  "name": "unittests_in_js",
+  "version": "1.0.0",
+  "description": "JavaScript unit testing project",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mocha": "^10.2.0",
+    "chai": "^4.3.7",
+    "sinon": "^15.0.1"
+  },
+  "devDependencies": {}
+}
